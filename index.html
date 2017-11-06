@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<title>Hangman</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+<body>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12"></div>
+				<img src="assets/images/headerLogo.png" class="img img-responsive" alt="Super Mario Quiz" />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-2 col-md-2 col-sm-2"></div>
+			<div class="col-lg-10 col-md-10 col-sm-10">
+				<div id="word">
+					<h1>Press Enter to play!</h1>
+				</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-4"></div>
+			<div class="col-lg-4 col-md-4 col-sm-4">
+				<div id="letters"></div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-4">
+				<div id="stats"></div>
+			</div>
+		</div>
+
+	</div> <!-- Container -->
+
+
+
+
+
+
+	<script type="text/javascript">
+/* VARIABLE DEFINITIONS
+	possibleWords
+		Array of words (strings) the game will choose at the beginning of the game.
+	playerLetters
+		Array of letters the User has chosen so far this game.
+		Starts as an empty array
+		Has new letters entered with each keypress verified as a letter
+		Emptied after each game ends
+	curWordLetters
+		An array.
+		Starts as an empty array
+		Each letter of the chosen word is its own index.
+		Emptied after each game ends
+	wordStatus
+		An array of letters indicating the game's current status.
+		Starts empty.
+		When the word is chosen, each index is an underscore
+		The number of indexes is determined by the length of the chosen word
+		When a correct letter is guessed, the appropriate underscore is replaced with the letter
+		wordStatus is what will be displayed to the user
+	wins
+		The number of total wins. This begins at 0 and increases when a word is fully guessed.
+	losses
+		The number of total losses. This begins at 0 and decreases when guesses run out.
+	guesses
+		The number of remaining guesses. This begins at 8 and decreases when an incorrect letter (which hasn't been guessed before) is selected.
+	newGame
+		Boolean value. When true and a key is pressed, the game will choose a new word and set it to false. When a win or loss is recorded, it will reset to true.
+	duplicate
+		Boolean value, starts as false. If the user presses a letter that has already been guessed, this will update to true, and the guess will not register in the system. It is reset to false after the rest of the code runs.
+	currentWord
+		A string. The game will choose a word from its list of words and set it to currentWord. If an error occurs during this assignment, the default value "Wii" will still allow the game to play.
+	userText
+		A string, which is not initially defined. userText is the input a user gives the game.
+	validLetter
+		A boolean, originally slated as false. When a guessed letter fits into the puzzle, it checks to see if the puzzle is complete and does not remove a guess.
+	lettersRemaining
+		A number which begins at 0. This is reset when a new word is selected, and it decreases every time a letter is found. This determines if a game is won.
+	htmlStats
+		This is the text which will be placed in the "stats" div in the HTML document. It will be rewritten after every valid key press with the game stats (wins, losses, guesses).
+	htmlWord
+		This is the text which will be placed in the "word" div in the HTML document. It will be rewritten after every valid key press with wordStatus.
+	htmlLetters
+		This is the text which will be placed in the "letters" div in the HTML document. It will be rewritten after every valid key press with playerLetters.
+	
+*/
+
+
+		
+		// Create a list of words to use
+		var possibleWords = ["MARIO" , "NINTENDO" , "SWITCH" , "LUIGI" , "BOWSER" , "PRINCESS" , "SUNSHINE" , "COINS" , "GAMEBOY" , "PLUMBER" , "MUSTACHE" , "PAULINE" , "CONSOLE" , "MIYAMOTO" , "IWATA" , "REGGIE" , "PEACH" , "BACON" , "ODYSSEY" , "DAISY" , "WARIO" , "WALUIGI" , "TANOOKI" , "CAPPY" , "RAMONA" , "TOAD" , "PIPE" , "JUMPMAN" , "CAT" , "KART" , "GOOMBA" , "KOOPA" , "SHELL" , "BOOMERANG" , "FIREBALL" , "JUMP" , "MUSHROOM" , "CASTLE"];
+		// Initialize the player's guessed letters
+		var playerLetters = [], curWordLetters = [], wordStatus = [];
+		// Initialize other variables
+		var wins = 0, losses = 0, guesses = 8; newGame = true, duplicate = false, currentWord = "wii", userText = "", validLetter = false, lettersRemaining = 0;
+		var htmlStats = "", htmlWord = "", htmlLetters =""; 
+		// Listen for player input
+		document.onkeyup = function(event) {
+			// alert("A key was pressed!");
+			userText = event.key;
+			// If this is a new game, pick a word from the array to use
+			if(newGame) {
+				currentWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
+				// Don't pick a new currentWord until the current game is finished
+
+				// If letter is on the board, update blank spots
+				curWordLetters = [...currentWord]; // curWordLetters is now an array where each letter is its own index
+				for (var i = 0; i < curWordLetters.length; i++) {
+					wordStatus.push("_");
+					lettersRemaining++;
+					console.log("wordStatus: " + wordStatus);
+					console.log("i: " + i);
+				}
+
+				// Show the actual word to begin; this will eventually be replaced with blanks
+				htmlWord = "";
+				console.log(htmlWord);
+				for (var i = 0; i < wordStatus.length; i++) {
+					htmlWord = htmlWord + " " + wordStatus[i];
+					console.log(htmlWord);
+				}
+				document.querySelector("#word").innerHTML = "<h1>" + htmlWord + "</h1>";
+
+				newGame = false;
+
+				// Delete any previous messages when a new game begins.
+				htmlLetters = " ";
+				document.querySelector("#letters").innerHTML = htmlLetters;
+
+				// Display the stats area
+				htmlStats = "<p>Wins: " + wins + "</p>"
+							+ "<p>Losses: " + losses + "</p>"
+							+ "<p>Guesses Remaining: " + guesses + "</p>";
+				document.querySelector("#stats").innerHTML = htmlStats;
+
+				// If # of blanks = 0, win++ & guesses = 8 & newGame = true & empty playerLetters
+				
+				console.log("curWordLetters: " + curWordLetters);
+				console.log("duplicate: " + duplicate);
+			}
+
+			
+
+			// Determine if input is a letter
+			if (event.keyCode >= 65 && event.keyCode <= 90) {
+				// force the letter to be Upper Case
+				userText = userText.toUpperCase();
+
+				// Determine if input has already been used
+				for (var i = 0; i < playerLetters.length; i++) {
+					if(event.key.toUpperCase() == playerLetters[i]) {
+						duplicate = true;
+						console.log("true");
+					}
+				}
+
+				// Update the letters array with the guess
+				if(duplicate == false) {
+					playerLetters.push(userText);
+					console.log(playerLetters);
+
+					// Check the input against the blanks & update if found
+					for (var i = 0; i < curWordLetters.length; i++) {
+						if(event.key.toUpperCase() == curWordLetters[i]) {
+							wordStatus.splice(i, 1, event.key.toUpperCase());
+							validLetter = true;
+							lettersRemaining--;
+							console.log("guesses before: " + guesses);
+						}
+					}
+
+					// If the guessed letter was inside the puzzle:
+					if(validLetter == true) {
+						// Display the updated puzzle result
+						htmlWord = "";
+						console.log(htmlWord);
+						for (var i = 0; i < wordStatus.length; i++) {
+							htmlWord = htmlWord + " " + wordStatus[i];
+							console.log(htmlWord);
+						}
+						document.querySelector("#word").innerHTML = "<h1>" + htmlWord + "</h1>";
+						// Display the updated letters used
+						htmlLetters = "<h2>" + playerLetters + "</h2>";
+						document.querySelector("#letters").innerHTML = htmlLetters;
+						// If the puzzle is complete
+						if(lettersRemaining < 1) {
+							// Update stats
+							wins++;
+							guesses = 8;
+							// End game
+							newGame = true;
+							// Reset all arrays
+							playerLetters.splice(0, playerLetters.length + 1);
+							wordStatus.splice(0, wordStatus.length + 1);
+							curWordLetters.splice(0, curWordLetters.length + 1);
+							// display "You Win!" on the Letters div
+							htmlLetters = "<h2>You Won!!!<br>Press Enter to play again.</h2>";
+							document.querySelector("#letters").innerHTML = htmlLetters;
+						}
+						// display updated Stats
+						htmlStats = "<p>Wins: " + wins + "</p>"
+									+ "<p>Losses: " + losses + "</p>"
+									+ "<p>Guesses Remaining: " + guesses + "</p>";
+						document.querySelector("#stats").innerHTML = htmlStats;
+					} // <-- if(validLetter == true)
+					// If the guessed letter was not inside the puzzle:
+					else {
+						// Update stats
+						guesses--;
+						// Display the updated letters used
+						htmlLetters = "<h2>" + playerLetters + "</h2>";
+						document.querySelector("#letters").innerHTML = htmlLetters;
+						// If guesses = 0
+						if(guesses == 0) {
+							// end game
+							newGame = true;
+							// Update stats
+							losses++;
+							guesses = 8;
+							// reset all arrays
+							playerLetters.splice(0, playerLetters.length + 1);
+							wordStatus.splice(0, wordStatus.length + 1);
+							curWordLetters.splice(0, curWordLetters.length + 1);
+							// reset lettersRemaining
+							lettersRemaining = 0;
+							// display "You Lose!" on the Letters div
+							htmlLetters = "<h2>You Lose!<br>Press Enter to play again.</h2>";
+							document.querySelector("#letters").innerHTML = htmlLetters;
+							// display the correct word on the Word div
+							document.querySelector("#word").innerHTML = "<h1>" + currentWord + "</h1>";
+						}
+						// Display the updated stats
+						htmlStats = "<p>Wins: " + wins + "</p>"
+									+ "<p>Losses: " + losses + "</p>"
+									+ "<p>Guesses Remaining: " + guesses + "</p>";
+						document.querySelector("#stats").innerHTML = htmlStats;
+					} // if(validLetter != true)
+				} // if(duplicate == false)
+
+				else {
+					duplicate = false; // resets the duplicate to default
+				}
+				console.log("guesses after: " + guesses);
+				validLetter = false;
+			}
+		} // <-- listen for inputs
+
+	</script>
+
+
+
+
+</body>
+</html>
