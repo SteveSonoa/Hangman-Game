@@ -119,16 +119,16 @@
 				for (var i = 0; i < curWordLetters.length; i++) {
 					wordStatus.push("_");
 					lettersRemaining++;
-					console.log("wordStatus: " + wordStatus);
-					console.log("i: " + i);
+					// console.log("wordStatus: " + wordStatus);
+					// console.log("i: " + i);
 				}
 
 				// Show the actual word to begin; this will eventually be replaced with blanks
 				htmlWord = "";
-				console.log(htmlWord);
+				// console.log(htmlWord);
 				for (var i = 0; i < wordStatus.length; i++) {
 					htmlWord = htmlWord + " " + wordStatus[i];
-					console.log(htmlWord);
+					// console.log(htmlWord);
 				}
 				document.querySelector("#word").innerHTML = "<h1>" + htmlWord + "</h1>";
 
@@ -146,8 +146,8 @@
 
 				// If # of blanks = 0, win++ & guesses = 8 & newGame = true & empty playerLetters
 				
-				console.log("curWordLetters: " + curWordLetters);
-				console.log("duplicate: " + duplicate);
+				// console.log("curWordLetters: " + curWordLetters);
+				// console.log("duplicate: " + duplicate);
 			}
 
 			
@@ -161,14 +161,14 @@
 				for (var i = 0; i < playerLetters.length; i++) {
 					if(event.key.toUpperCase() == playerLetters[i]) {
 						duplicate = true;
-						console.log("true");
+						// console.log("true");
 					}
 				}
 
 				// Update the letters array with the guess
 				if(duplicate == false) {
 					playerLetters.push(userText);
-					console.log(playerLetters);
+					// console.log(playerLetters);
 
 					// Check the input against the blanks & update if found
 					for (var i = 0; i < curWordLetters.length; i++) {
@@ -176,7 +176,7 @@
 							wordStatus.splice(i, 1, event.key.toUpperCase());
 							validLetter = true;
 							lettersRemaining--;
-							console.log("guesses before: " + guesses);
+							// console.log("guesses before: " + guesses);
 						}
 					}
 
@@ -184,10 +184,10 @@
 					if(validLetter == true) {
 						// Display the updated puzzle result
 						htmlWord = "";
-						console.log(htmlWord);
+						// console.log(htmlWord);
 						for (var i = 0; i < wordStatus.length; i++) {
 							htmlWord = htmlWord + " " + wordStatus[i];
-							console.log(htmlWord);
+							// console.log(htmlWord);
 						}
 						document.querySelector("#word").innerHTML = "<h1>" + htmlWord + "</h1>";
 						// Display the updated letters used
@@ -251,7 +251,7 @@
 				else {
 					duplicate = false; // resets the duplicate to default
 				}
-				console.log("guesses after: " + guesses);
+				// console.log("guesses after: " + guesses);
 				validLetter = false;
 			}
 		} // <-- listen for inputs
