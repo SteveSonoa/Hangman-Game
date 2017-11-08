@@ -16,6 +16,22 @@
 </head>
 <body>
 
+	<audio id="gameLose">
+	  <source src="assets/sfx/gameLose.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="gameWin">
+	  <source src="assets/sfx/gameWin.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="letterRight">
+	  <source src="assets/sfx/letterRight.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="letterWrong">
+	  <source src="assets/sfx/letterWrong.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="gameStart">
+	  <source src="assets/sfx/gameStart.mp3" type="audio/mpeg">
+	</audio>
+
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12 col-md-12 col-sm-12">
@@ -97,6 +113,11 @@
 	
 */
 
+		// Define a function that plays audio at the correct times
+		function playAudio(audioFile) { 
+			var x = document.getElementById(audioFile); 
+		    x.play();
+		} 
 
 		
 		// Create a list of words to use
@@ -149,6 +170,7 @@
 				
 				// console.log("curWordLetters: " + curWordLetters);
 				// console.log("duplicate: " + duplicate);
+				playAudio("gameStart");
 			}
 
 			
@@ -177,12 +199,14 @@
 							wordStatus.splice(i, 1, event.key.toUpperCase());
 							validLetter = true;
 							lettersRemaining--;
+
 							// console.log("guesses before: " + guesses);
 						}
 					}
 
 					// If the guessed letter was inside the puzzle:
 					if(validLetter == true) {
+						
 						// Display the updated puzzle result
 						htmlWord = "";
 						// console.log(htmlWord);
@@ -208,6 +232,10 @@
 							// display "You Win!" on the Letters div
 							htmlLetters = "<h2>You Won!!!<br>Press Enter to play again.</h2>";
 							document.querySelector("#letters").innerHTML = htmlLetters;
+							playAudio("gameWin");
+						}
+						else {
+							playAudio("letterRight");
 						}
 						// display updated Stats
 						htmlStats = "<p>Wins: " + wins + "</p>"
@@ -240,6 +268,10 @@
 							document.querySelector("#letters").innerHTML = htmlLetters;
 							// display the correct word on the Word div
 							document.querySelector("#word").innerHTML = "<h1>" + currentWord + "</h1>";
+							playAudio("gameLose");
+						}
+						else {
+							playAudio("letterWrong");
 						}
 						// Display the updated stats
 						htmlStats = "<p>Wins: " + wins + "</p>"
